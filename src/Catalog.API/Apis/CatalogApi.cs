@@ -126,7 +126,8 @@ public static class CatalogApi
         [AsParameters] CatalogServices services,
         [Description("The name of the item to return")] string name,
         [Description("The type of items to return")] int? type,
-        [Description("The brand of items to return")] int? brand)
+        [Description("The brand of items to return")] int? brand,
+        [FromQuery(Name = "price")] string price = null)
     {
         var pageSize = paginationRequest.PageSize;
         var pageIndex = paginationRequest.PageIndex;
@@ -145,10 +146,17 @@ public static class CatalogApi
         {
             root = root.Where(c => c.CatalogBrandId == brand);
         }
+        if (!string.IsNullOrEmpty(price))
+        {
+            if (price == "lt50")
+                root = root.Where(c => c.Price < 50);
+            else if (price == "50-100")
+                root = root.Where(c => c.Price >= 50 && c.Price <= 100);
+            else if (price == "gt100")
+                root = root.Where(c => c.Price > 100);
+        }
 
-        var totalItems = await root
-            .LongCountAsync();
-
+        var totalItems = await root.LongCountAsync();
         var itemsOnPage = await root
             .OrderBy(c => c.Name)
             .Skip(pageSize * pageIndex)

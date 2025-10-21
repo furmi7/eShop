@@ -12,34 +12,30 @@
             <div class="catalog-search-group">
                 <h3>Brand</h3>
                 <div class="catalog-search-group-tags">
-                    <a href="@BrandUri(null)"
-                    class="catalog-search-tag @(BrandId == null ? "active " : "")">
-                        All
-                    </a>
+                    <a href="@BrandUri(null)" class="catalog-search-tag @(BrandId == null ? "active " : "")">All</a>
                     @foreach (var brand in catalogBrands)
                     {
-                        <a href="@BrandUri(brand.Id)"
-                        class="catalog-search-tag @(BrandId == brand.Id ? "active " : "")">
-                            @brand.Brand
-                        </a>
+                        <a href="@BrandUri(brand.Id)" class="catalog-search-tag @(BrandId == brand.Id ? "active " : "")">@brand.Brand</a>
                     }
                 </div>
             </div>
             <div class="catalog-search-group">
                 <h3>Type</h3>
-
                 <div class="catalog-search-group-tags">
-                    <a href="@TypeUri(null)"
-                    class="catalog-search-tag @(ItemTypeId == null ? "active " : "")">
-                    All
-                    </a>
+                    <a href="@TypeUri(null)" class="catalog-search-tag @(ItemTypeId == null ? "active " : "")">All</a>
                     @foreach (var itemType in catalogItemTypes)
                     {
-                        <a href="@TypeUri(itemType.Id)"
-                        class="catalog-search-tag @(ItemTypeId == itemType.Id ? "active " : "")">
-                            @itemType.Type
-                        </a>
+                        <a href="@TypeUri(itemType.Id)" class="catalog-search-tag @(ItemTypeId == itemType.Id ? "active " : "")">@itemType.Type</a>
                     }
+                </div>
+            </div>
+            <div class="catalog-search-group">
+                <h3>Price</h3>
+                <div class="catalog-search-group-tags">
+                    <a href="@PriceUri(null)" class="catalog-search-tag @(PriceFilter == null ? "active " : "")">All</a>
+                    <a href="@PriceUri("lt50")" class="catalog-search-tag @(PriceFilter == "lt50" ? "active " : "")">&lt;50</a>
+                    <a href="@PriceUri("50-100")" class="catalog-search-tag @(PriceFilter == "50-100" ? "active " : "")">50-100</a>
+                    <a href="@PriceUri("gt100")" class="catalog-search-tag @(PriceFilter == "gt100" ? "active " : "")">&gt;100</a>
                 </div>
             </div>
         </div>
@@ -51,6 +47,7 @@
     IEnumerable<CatalogItemType>? catalogItemTypes;
     [Parameter] public int? BrandId { get; set; }
     [Parameter] public int? ItemTypeId { get; set; }
+    [Parameter] public string? PriceFilter { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,11 +62,23 @@
     {
         { "page", null },
         { "brand", brandId },
+        { "type", ItemTypeId },
+        { "price", PriceFilter }
     });
 
     private string TypeUri(int? typeId) => Nav.GetUriWithQueryParameters(new Dictionary<string, object?>()
     {
         { "page", null },
+        { "brand", BrandId },
         { "type", typeId },
+        { "price", PriceFilter }
+    });
+
+    private string PriceUri(string? price) => Nav.GetUriWithQueryParameters(new Dictionary<string, object?>()
+    {
+        { "page", null },
+        { "brand", BrandId },
+        { "type", ItemTypeId },
+        { "price", price }
     });
 }
